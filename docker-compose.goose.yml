@@ -1,0 +1,49 @@
+networks:
+  localai_default:
+    external: true
+
+services:
+  goose:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: goose
+    restart: unless-stopped
+    stdin_open: true
+    tty: true
+    user: "1002:2000"
+    group_add:
+      - "${DOCKER_GID:-999}"
+    networks:
+      - localai_default
+    ports:
+      - "7681:7681"
+    volumes:
+      - ${HOME}/workspace:/workspace
+      - ./.goosehints:/workspace/.goosehints:ro
+      - ${HOME}/goose/sessions:/home/goose/.local/share/goose/sessions
+      - ${HOME}:/home/user/host_home
+      - ./config:/home/goose/.config/goose
+      - ./recipes:/home/goose/.config/goose/recipes
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      - DOCKER_HOST=unix:///var/run/docker.sock
+
+      - GOOSE_PROVIDER=ollama
+      - GOOSE_MODEL=${GOOSE_MODEL:-qwen2.5-coder:latest}
+      - OLLAMA_HOST=http://ollama:11434
+
+      - GOOSE_INPUT_LIMIT=131072
+      - GOOSE_TEMPERATURE=0.1
+      - GOOSE_CONTEXT_STRATEGY=summarize
+      - GOOSE_MAX_TURNS=100
+      - GOOSE_DISABLE_KEYRING=1
+      - GOOSE_TELEMETRY_ENABLED=false
+      - CONTEXT_FILE_NAMES=["CLAUDE.md", ".goosehints"]
+
+      - PLANE_API_KEY=${PLANE_API_KEY:-}
+      - PLANE_WORKSPACE_SLUG=${PLANE_WORKSPACE_SLUG:-}
+      - PLANE_BASE_URL=${PLANE_BASE_URL:-}
+
+    entrypoint: ["ttyd", "-p", "7681", "-W", "goose", "session"]
+    working_dir: /workspace

@@ -1,0 +1,9 @@
+.env
+
+# Конфиги Goose — хранятся локально, в облако не попадают
+config/config.yaml
+config/config.yaml.bak
+config/secrets.yaml
+config/permission.yaml
+config/memory/
+config/custom_providers/
