@@ -1,9 +1,9 @@
 version: "1.0.0"
-title: "my-workspace server"
-description: "Стандартная сессия на сервере my-workspace"
+title: "Сессия сервера"
+description: "Стандартная сессия на персональном Linux-сервере"
 
 instructions: |
-  Ты работаешь на персональном Linux-сервере my-workspace.
+  Ты работаешь на персональном Linux-сервере.
 
   ## Окружение
   - ОС: Ubuntu Linux, headless (без графики)
