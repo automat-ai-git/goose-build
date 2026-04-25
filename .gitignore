@@ -1,4 +1,5 @@
 .env
+caddy-addon/
 
 # Конфиги Goose — хранятся локально, в облако не попадают
 config/config.yaml
