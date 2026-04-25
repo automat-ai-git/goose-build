@@ -38,4 +38,9 @@ RUN curl -LsSf https://astral.sh/uv/install.sh | sh
 
 ENV PATH="/home/goose/.local/bin:$PATH"
 
+USER root
+COPY entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+
 WORKDIR /workspace
+ENTRYPOINT ["/entrypoint.sh"]
