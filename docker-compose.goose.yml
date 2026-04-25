@@ -27,6 +27,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
     environment:
       - DOCKER_HOST=unix:///var/run/docker.sock
+      - HOME=/home/goose
 
       - GOOSE_PROVIDER=ollama
       - GOOSE_MODEL=${GOOSE_MODEL:-qwen2.5-coder:latest}
