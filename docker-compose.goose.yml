@@ -22,8 +22,7 @@ services:
       - ./.goosehints:/workspace/.goosehints:ro
       - ${HOME}/goose/sessions:/home/goose/.local/share/goose/sessions
       - ${HOME}:/home/user/host_home
-      - ./config:/home/goose/.config/goose
-      - ./recipes:/home/goose/.config/goose/recipes
+      - ${HOME}/.config/goose:/home/goose/.config/goose
       - /var/run/docker.sock:/var/run/docker.sock
     environment:
       - DOCKER_HOST=unix:///var/run/docker.sock
