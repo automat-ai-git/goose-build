@@ -11,7 +11,6 @@ services:
     restart: unless-stopped
     stdin_open: true
     tty: true
-    user: "1002:2000"
     group_add:
       - "${DOCKER_GID:-999}"
     networks:
@@ -45,5 +44,5 @@ services:
       - PLANE_WORKSPACE_SLUG=${PLANE_WORKSPACE_SLUG:-}
       - PLANE_BASE_URL=${PLANE_BASE_URL:-}
 
-    entrypoint: ["ttyd", "-p", "7681", "-W", "goose", "session"]
+    entrypoint: ["/entrypoint.sh"]
     working_dir: /workspace
