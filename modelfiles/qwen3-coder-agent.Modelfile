@@ -1,20 +1,19 @@
-# Modelfile для Qwen3-Coder — параметры инференса под Goose на NVIDIA GPU
+# Modelfile для Qwen3 Pro 128k — параметры инференса под Goose на NVIDIA GPU
 #
-# Создать модель:
-#   ollama create qwen3-coder-agent -f modelfiles/qwen3-coder-agent.Modelfile
+# Обновить существующую модель:
+#   docker exec -i ollama ollama create qwen36-pro-128k -f - < ~/goose/modelfiles/qwen3-coder-agent.Modelfile
 #
 # Запустить сессию Goose с этой моделью:
 #   goose session --recipe ~/.config/goose/recipes/qwen3-coder.yaml
 
-FROM qwen3.6-coder:27b-instruct-q8_0
+FROM qwen36-pro-128k:latest
 
-# Большое окно: агент видит длинные логи, документацию и код одновременно
 PARAMETER num_ctx 65536
-
-# Низкая температура: точность в bash/docker командах важнее креативности
-PARAMETER temperature 0.2
-
-# Держать модель в VRAM (не выгружать между запросами)
+PARAMETER temperature 0
+PARAMETER top_k 20
+PARAMETER top_p 0.95
+PARAMETER repeat_penalty 1.0
+PARAMETER presence_penalty 0
 PARAMETER use_mlock true
 
 # Системный контекст — передаётся через Goose (рецепт + .goosehints)
@@ -29,7 +28,7 @@ PARAMETER use_mlock true
 #     - OLLAMA_NUM_PARALLEL=1
 #     - OLLAMA_MAX_LOADED_MODELS=1
 #     - OLLAMA_KEEP_ALIVE=5h
-#     - OLLAMA_CONTEXT_LENGTH=65536   # совпадает с num_ctx выше
+#     - OLLAMA_CONTEXT_LENGTH=65536
 #     - CUDA_VISIBLE_DEVICES=0
 #     - NVIDIA_VISIBLE_DEVICES=0
 # ───────────────────────────────────────────────────────────────
