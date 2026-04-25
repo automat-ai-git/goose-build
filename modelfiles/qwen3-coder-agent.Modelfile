@@ -1,0 +1,44 @@
+# Modelfile для Qwen3-Coder — оптимизирован под Goose на NVIDIA GPU
+#
+# Создать модель:
+#   ollama create qwen3-coder-agent -f modelfiles/qwen3-coder-agent.Modelfile
+#
+# Использовать в Goose (.env):
+#   GOOSE_MODEL=qwen3-coder-agent
+
+FROM qwen3.6-coder:27b-instruct-q8_0
+
+# Большое окно: агент видит длинные логи, документацию и код одновременно
+PARAMETER num_ctx 65536
+
+# Низкая температура: точность в bash/docker командах важнее креативности
+PARAMETER temperature 0.2
+
+# Держать модель в VRAM (не выгружать между запросами)
+PARAMETER use_mlock true
+
+SYSTEM """
+Ты — AI-агент с полным доступом к инструментам: файловая система, shell-команды, Docker, интернет.
+
+Принципы работы:
+- Думай пошагово перед действием
+- Используй инструменты вместо догадок
+- Для больших задач — сначала составь план и согласуй
+- Не удаляй файлы без подтверждения пользователя
+- Давай короткие и точные ответы
+- Язык общения: русский
+"""
+
+# ───────────────────────────────────────────────────────────────
+# Настройки ниже — НЕ для Modelfile, а для docker-compose Ollama:
+#
+#   environment:
+#     - OLLAMA_FLASH_ATTENTION=1
+#     - OLLAMA_KV_CACHE_TYPE=q8_0
+#     - OLLAMA_NUM_PARALLEL=1
+#     - OLLAMA_MAX_LOADED_MODELS=1
+#     - OLLAMA_KEEP_ALIVE=5h
+#     - OLLAMA_CONTEXT_LENGTH=32768
+#     - CUDA_VISIBLE_DEVICES=0
+#     - NVIDIA_VISIBLE_DEVICES=0
+# ───────────────────────────────────────────────────────────────
