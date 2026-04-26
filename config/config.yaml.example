@@ -88,12 +88,26 @@ extensions:
     args:
     - plane-mcp-server
     - stdio
-    envs:
-      PLANE_BASE_URL: "http://plane-app-api-1:8000"
+    envs: {}
     env_keys:
     - PLANE_API_KEY
     - PLANE_WORKSPACE_SLUG
     - PLANE_BASE_URL
+    timeout: 300
+    bundled: null
+    available_tools: []
+  searxng:
+    enabled: true
+    type: stdio
+    name: SearXNG
+    description: Web search via SearXNG — aggregates results from Google, Bing, Brave, DuckDuckGo and many others
+    cmd: npx
+    args:
+    - -y
+    - mcp-searxng
+    envs:
+      SEARXNG_URL: http://searxng:8080
+    env_keys: []
     timeout: 300
     bundled: null
     available_tools: []
@@ -205,21 +219,12 @@ extensions:
     display_name: Skills
     bundled: true
     available_tools: []
-
 GOOSE_TELEMETRY_ENABLED: false
+TETRATE_HOST: https://api.router.tetrate.ai
+CLAUDE_THINKING_TYPE: disabled
 OLLAMA_HOST: http://ollama:11434
 OLLAMA_TIMEOUT: '600'
 GOOSE_PROVIDER: ollama
 GOOSE_MODEL: qwen36-pro-128k:latest
+ZHIPU_BASE_URL: https://api.z.ai/api/paas/v4/
 GOOSE_MODE: auto
-
-user:
-  always_allow:
-  - extensionmanager__manage_extensions
-  ask_before: []
-  never_allow: []
-
-# API ключи — хранить в config/secrets.yaml (в gitignore)
-# ZHIPU_API_KEY: ...
-# CUSTOM_ZAI_API_KEY: ...
-# TETRATE_API_KEY: ...
