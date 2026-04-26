@@ -1,12 +1,16 @@
 #!/bin/bash
 set -e
 
-chown -R goose:workspace_users /home/goose/.local/share/goose/ 2>/dev/null || true
+mkdir -p /home/goose/.local/share/goose/logs/cli
+mkdir -p /home/goose/.local/share/goose/sessions
+mkdir -p /home/goose/.local/state/goose/logs/cli
+mkdir -p /home/goose/.config/goose
+
+chown -R goose:workspace_users /home/goose/.local/
 chown -R goose:workspace_users /home/goose/.config/goose/ 2>/dev/null || true
 
 cat > /etc/goose-init << 'EOF'
 [ -f ~/.bashrc ] && source ~/.bashrc
-
 echo ""
 echo "  ══════════════════════════════════════"
 echo "  🪿  Goose AI Agent"
@@ -18,4 +22,4 @@ echo "  ════════════════════════
 echo ""
 EOF
 
-exec runuser -u goose -- env HOME=/home/goose PATH="/home/goose/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin" ttyd -p 7681 -W bash --init-file /etc/goose-init
+exec ttyd -p 7681 -W -u 1002 bash --init-file /etc/goose-init
