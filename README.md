@@ -49,8 +49,6 @@ docker compose -f docker-compose.goose.yml up --build -d
 ├── docker-compose.goose.yml     # запуск сервиса
 ├── .env.example                 # шаблон переменных (заполнить → .env)
 ├── .goosehints                  # контекст для Goose (читается каждую сессию)
-├── caddy-addon/
-│   └── site-goose.conf          # конфиг Caddy с авторизацией
 ├── config/
 │   ├── config.yaml.example      # шаблон конфига Goose (заполнить → config.yaml)
 │   ├── config.yaml              # реальный конфиг (не в git)
@@ -68,7 +66,8 @@ docker compose -f docker-compose.goose.yml up --build -d
 | `Dockerfile`, `docker-compose.goose.yml` | ✓ | основа сборки |
 | `.env.example`, `config.yaml.example` | ✓ | шаблоны для старта |
 | `.goosehints` | ✓ | контекст сервера |
-| `caddy-addon/`, `recipes/` | ✓ | конфиги и рецепты |
+| `recipes/` | ✓ | шаблоны сессий |
+| `caddy-addon/` | ✗ | конфиг с личными настройками сервера |
 | `.env` | ✗ | секреты |
 | `config/config.yaml`, `secrets.yaml` | ✗ | секреты и личные настройки |
 | `sessions/` | ✗ | история разговоров |
@@ -84,7 +83,7 @@ docker compose -f docker-compose.goose.yml up --build -d
 
 ## Доступ через Caddy
 
-Скопируй `caddy-addon/site-goose.conf` в папку аддонов Caddy.  
+Создай конфиг для Caddy (пример в `.env.example`).  
 Сгенерируй хэш пароля и добавь в `.env`:
 
 ```bash
@@ -93,8 +92,8 @@ docker exec caddy caddy hash-password --plaintext "твой_пароль"
 
 Затем в `.env`:
 ```
-ADMIN_USER=admin
-GOOSE_HASH=<хэш из команды выше>
+GOOSE_USERNAME=admin
+GOOSE_PASSWORD_HASH=<хэш из команды выше>
 ```
 
 ## Рецепты
