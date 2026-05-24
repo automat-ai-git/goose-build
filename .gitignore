@@ -8,3 +8,5 @@ config/secrets.yaml
 config/permission.yaml
 config/memory/
 config/custom_providers/
+sessions/
+state/
