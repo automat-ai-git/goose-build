@@ -13,6 +13,7 @@ services:
     tty: true
     group_add:
       - "${DOCKER_GID:-999}"
+      - "2000"
     networks:
       - localai_default
     ports:
@@ -20,7 +21,8 @@ services:
     volumes:
       - ${HOME}/workspace:/workspace
       - ./.goosehints:/workspace/.goosehints:ro
-      - ${HOME}/goose/sessions:/home/goose/.local/share/goose/sessions
+      - ${HOME}/goose/sessions:/home/goose/.local/share/goose
+      - ${HOME}/goose/state:/home/goose/.local/state/goose
       - ${HOME}:/home/user/host_home
       - ${HOME}/.config/goose:/home/goose/.config/goose
       - /var/run/docker.sock:/var/run/docker.sock
@@ -29,7 +31,7 @@ services:
       - HOME=/home/goose
 
       - GOOSE_PROVIDER=ollama
-      - GOOSE_MODEL=${GOOSE_MODEL:-qwen2.5-coder:latest}
+      - GOOSE_MODEL=${GOOSE_MODEL:-}
       - OLLAMA_HOST=http://ollama:11434
 
       - GOOSE_INPUT_LIMIT=131072
@@ -38,11 +40,8 @@ services:
       - GOOSE_MAX_TURNS=100
       - GOOSE_DISABLE_KEYRING=1
       - GOOSE_TELEMETRY_ENABLED=false
-      - CONTEXT_FILE_NAMES=["CLAUDE.md", ".goosehints"]
+      - 'CONTEXT_FILE_NAMES=["CLAUDE.md", ".goosehints"]'
 
       - PLANE_API_KEY=${PLANE_API_KEY:-}
       - PLANE_WORKSPACE_SLUG=${PLANE_WORKSPACE_SLUG:-}
       - PLANE_BASE_URL=${PLANE_BASE_URL:-}
-
-    entrypoint: ["/entrypoint.sh"]
-    working_dir: /workspace
