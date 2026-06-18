@@ -30,8 +30,10 @@ services:
       - DOCKER_HOST=unix:///var/run/docker.sock
       - HOME=/home/goose
 
-      - GOOSE_PROVIDER=ollama
-      - GOOSE_MODEL=${GOOSE_MODEL:-}
+      - GOOSE_PROVIDER=openai
+      - GOOSE_MODEL=${GOOSE_MODEL:-qwen}
+      - OPENAI_API_KEY=none
+      - OPENAI_BASE_URL=http://192.168.1.125:8080/v1
       - OLLAMA_HOST=http://ollama:11434
 
       - GOOSE_INPUT_LIMIT=131072
