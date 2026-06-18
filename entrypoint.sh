@@ -2,8 +2,8 @@
 set -e
 
 mkdir -p /home/goose/.local/share/goose /home/goose/.config/goose
-chown -R goose:workspace_users /home/goose/.local/share/goose
-chown -R goose:workspace_users /home/goose/.config/goose
+chown -R goose:workspace_users /home/goose/.local
+chown -R goose:workspace_users /home/goose/.config
 
 cat > /etc/goose-init << 'EOF'
 [ -f ~/.bashrc ] && source ~/.bashrc
