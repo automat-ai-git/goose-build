@@ -21,6 +21,7 @@ RUN apt-get update && apt-get install -y \
     zip \
     wget \
     docker.io \
+    sudo \
     && curl -fsSL https://deb.nodesource.com/setup_22.x | bash - \
     && apt-get install -y nodejs \
     && apt-get clean \
@@ -33,7 +34,9 @@ RUN mkdir -p /usr/local/lib/docker/cli-plugins && \
     chmod +x /usr/local/lib/docker/cli-plugins/docker-compose
 
 RUN groupadd -g 2000 workspace_users && \
-    useradd -u 1002 -g 2000 -m -s /bin/bash goose
+    useradd -u 1002 -g 2000 -m -s /bin/bash goose && \
+    echo "goose ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/goose && \
+    chmod 0440 /etc/sudoers.d/goose
 
 USER goose
 WORKDIR /home/goose
@@ -48,5 +51,20 @@ USER root
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 
+RUN cat > /etc/goose-init << 'EOF'
+[ -f ~/.bashrc ] && source ~/.bashrc
+
+echo ""
+echo "  ══════════════════════════════════════"
+echo "  🪿  Goose AI Agent"
+echo "  ══════════════════════════════════════"
+echo "  goose session       — запустить сессию"
+echo "  goose configure     — настройка модели и MCP"
+echo "  goose --help        — все команды"
+echo "  ══════════════════════════════════════"
+echo ""
+EOF
+
+USER goose
 WORKDIR /workspace
 ENTRYPOINT ["/entrypoint.sh"]
