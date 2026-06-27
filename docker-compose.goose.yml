@@ -43,7 +43,7 @@ services:
       - GOOSE_MAX_TURNS=100
       - GOOSE_DISABLE_KEYRING=1
       - GOOSE_TELEMETRY_ENABLED=false
-      - 'CONTEXT_FILE_NAMES=["CLAUDE.md", ".goosehints"]'
+      - 'CONTEXT_FILE_NAMES=["agents/goose/CLAUDE.md", ".goosehints"]'
 
       - PLANE_API_KEY=${PLANE_API_KEY:-}
       - PLANE_WORKSPACE_SLUG=${PLANE_WORKSPACE_SLUG:-}
