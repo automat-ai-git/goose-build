@@ -25,7 +25,8 @@ RUN apt-get update && apt-get install -y \
     && curl -fsSL https://deb.nodesource.com/setup_22.x | bash - \
     && apt-get install -y nodejs \
     && apt-get clean \
-    && rm -rf /var/lib/apt/lists/*
+    && rm -rf /var/lib/apt/lists/* \
+    && pip3 install --break-system-packages requests pyyaml python-dotenv
 
 # Docker Compose plugin (agent manages compose stacks via docker.sock)
 RUN mkdir -p /usr/local/lib/docker/cli-plugins && \
