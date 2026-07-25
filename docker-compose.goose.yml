@@ -19,12 +19,12 @@ services:
     ports:
       - "7681:7681"
     volumes:
-      - ${HOME}/workspace:/workspace
+      - ${HOST_HOME}/workspace:/workspace
       - ./.goosehints:/workspace/.goosehints:ro
-      - ${HOME}/goose/sessions:/home/goose/.local/share/goose
-      - ${HOME}/goose/state:/home/goose/.local/state/goose
-      - ${HOME}:/home/user/host_home
-      - ${HOME}/.config/goose:/home/goose/.config/goose
+      - ${HOST_HOME}/goose/sessions:/home/goose/.local/share/goose
+      - ${HOST_HOME}/goose/state:/home/goose/.local/state/goose
+      - ${HOST_HOME}:/home/user/host_home
+      - ${HOST_HOME}/.config/goose:/home/goose/.config/goose
       - /var/run/docker.sock:/var/run/docker.sock
       - /mnt/e/meeting-data:/meeting-data:ro
     environment:
