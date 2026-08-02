@@ -10,3 +10,8 @@ config/memory/
 config/custom_providers/
 sessions/
 state/
+*.pem
+*.key
+*.cert
+.env.*
+!.env.example

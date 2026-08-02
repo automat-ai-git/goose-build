@@ -25,7 +25,7 @@ services:
       - ${HOST_HOME}:/host
       - ${HOST_HOME}/.config/goose:/home/goose/.config/goose
       - /var/run/docker.sock:/var/run/docker.sock
-      - /mnt/e/meeting-data:/meeting-data:ro
+      - ${MEETING_DATA_PATH:-/mnt/e/meeting-data}:/meeting-data:ro
     environment:
       - DOCKER_HOST=unix:///var/run/docker.sock
       - HOME=/home/goose
