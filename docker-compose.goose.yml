@@ -20,10 +20,10 @@ services:
       - "7681:7681"
     volumes:
       - ${HOST_HOME}/workspace:/workspace
-      - ./.goosehints:/workspace/.goosehints:ro
+      - ${HOST_HOME}/goose-build/.goosehints:/workspace/.goosehints:ro
       - ${HOST_HOME}/goose/sessions:/home/goose/.local/share/goose
       - ${HOST_HOME}/goose/state:/home/goose/.local/state/goose
-      - ${HOST_HOME}:/home/user/host_home
+      - ${HOST_HOME}:/host
       - ${HOST_HOME}/.config/goose:/home/goose/.config/goose
       - /var/run/docker.sock:/var/run/docker.sock
       - /mnt/e/meeting-data:/meeting-data:ro

@@ -179,7 +179,7 @@ extensions:
     args:
     - -y
     - '@modelcontextprotocol/server-filesystem'
-    - /home/user/host_home
+    - /host
     envs: {}
     env_keys: []
     timeout: 300
