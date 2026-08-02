@@ -29,6 +29,7 @@ services:
     environment:
       - DOCKER_HOST=unix:///var/run/docker.sock
       - HOME=/home/goose
+      - HOST_HOME=${HOST_HOME}
 
       - GOOSE_PROVIDER=openai
       - GOOSE_MODEL=${GOOSE_MODEL:-qwen}
