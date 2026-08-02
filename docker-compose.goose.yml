@@ -20,7 +20,6 @@ services:
       - "7681:7681"
     volumes:
       - ${HOST_HOME}/workspace:/workspace
-      - ${GOOSE_REPO_DIR}/.goosehints:/workspace/.goosehints:ro
       - ${HOST_HOME}/goose/sessions:/home/goose/.local/share/goose
       - ${HOST_HOME}/goose/state:/home/goose/.local/state/goose
       - ${HOST_HOME}:/host
