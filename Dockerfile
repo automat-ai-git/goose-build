@@ -28,16 +28,17 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/* \
     && pip3 install --break-system-packages requests pyyaml python-dotenv
 
-# tmux из исходников (Ubuntu 24.04 даёт только 3.4; extended-keys требует 3.5+)
-# + locales: без UTF-8 локали tmux рисует кириллицу и эмодзи подчёркиваниями
+# tmux 3.5a из исходников (Ubuntu 24.04 даёт только 3.4; extended-keys требует 3.5+).
+# ПИН НА 3.5a: на 3.8 ломается доставка OSC52 в браузер (копирование мышью не
+# доходит до буфера) — pi-build работает именно на 3.5a с идентичным tmux.conf
 RUN apt-get update && apt-get install -y \
     locales libevent-dev libncurses-dev bison pkg-config \
     && rm -rf /var/lib/apt/lists/* \
     && sed -i '/ru_RU.UTF-8/s/^# //g' /etc/locale.gen \
     && locale-gen \
-    && curl -fsSL https://github.com/tmux/tmux/releases/download/3.8/tmux-3.8.tar.gz | tar xz \
-    && cd tmux-3.8 && ./configure && make -j$(nproc) && make install \
-    && cd .. && rm -rf tmux-3.8
+    && curl -fsSL https://github.com/tmux/tmux/releases/download/3.5a/tmux-3.5a.tar.gz | tar xz \
+    && cd tmux-3.5a && ./configure && make -j$(nproc) && make install \
+    && cd .. && rm -rf tmux-3.5a
 
 ENV LANG=ru_RU.UTF-8
 ENV LC_ALL=ru_RU.UTF-8
@@ -72,6 +73,10 @@ WORKDIR /home/goose
 RUN curl -fsSL https://github.com/aaif-goose/goose/releases/download/stable/download_cli.sh | CONFIGURE=false bash
 
 RUN curl -LsSf https://astral.sh/uv/install.sh | sh
+
+# Прогрев npx-кэша MCP-серверов: без него первая сессия висит, пока npx
+# качает пакеты (инициализация экстеншенов обрывается по таймауту с EPIPE)
+RUN timeout 120 npx -y @modelcontextprotocol/server-filesystem /workspace < /dev/null || true
 
 ENV PATH="/home/goose/.local/bin:$PATH"
 
