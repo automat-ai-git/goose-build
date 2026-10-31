@@ -7,7 +7,9 @@
 ## Что внутри
 
 - **Goose** — AI-агент, который пишет код, управляет файлами и Docker-контейнерами
-- **ttyd** — терминал в браузере (порт 7681)
+- **ttyd + tmux** — терминал в браузере (порт 7681). Сессия живёт в tmux-сервере,
+  поэтому переживает обрыв связи и релоад Caddy. Копирование — выделить мышью
+  (OSC52 → буфер браузера), вставка — правый клик > Paste
 - **Caddy** — авторизация перед входом (настраивается отдельно)
 - **Ollama** — локальные модели (подключается через сеть `localai_default`)
 
@@ -47,6 +49,8 @@ docker compose -f docker-compose.goose.yml up --build -d
 ~/goose/
 ├── Dockerfile                   # образ контейнера
 ├── docker-compose.goose.yml     # запуск сервиса
+├── tmux.conf                    # tmux: скролл мышью, копирование, выживание сессии
+├── yank                         # OSC52-escape → буфер обмена браузера
 ├── .env.example                 # шаблон переменных (заполнить → .env)
 ├── .goosehints                  # контекст для Goose (читается каждую сессию)
 ├── config/
@@ -64,6 +68,7 @@ docker compose -f docker-compose.goose.yml up --build -d
 | Файл / папка | В git | Почему |
 |---|---|---|
 | `Dockerfile`, `docker-compose.goose.yml` | ✓ | основа сборки |
+| `tmux.conf`, `yank` | ✓ | tmux-сессия и копирование мышью |
 | `.env.example`, `config.yaml.example` | ✓ | шаблоны для старта |
 | `.goosehints` | ✓ | контекст сервера |
 | `recipes/` | ✓ | шаблоны сессий |

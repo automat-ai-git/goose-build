@@ -28,6 +28,27 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/* \
     && pip3 install --break-system-packages requests pyyaml python-dotenv
 
+# tmux 3.5a из исходников (Ubuntu 24.04 даёт только 3.4; extended-keys требует 3.5+)
+RUN apt-get update && apt-get install -y \
+    libevent-dev libncurses-dev bison pkg-config \
+    && rm -rf /var/lib/apt/lists/* \
+    && curl -fsSL https://github.com/tmux/tmux/releases/download/3.5a/tmux-3.5a.tar.gz | tar xz \
+    && cd tmux-3.5a && ./configure && make -j$(nproc) && make install \
+    && cd .. && rm -rf tmux-3.5a
+
+# ttyd frontend с поддержкой OSC52 (копирование в буфер браузера)
+# apt-версия ttyd (1.7.x) не имеет @xterm/addon-clipboard,
+# поэтому собираем фронтенд из main ветки и подаём через -I
+RUN git clone --depth 1 https://github.com/tsl0922/ttyd.git /tmp/ttyd-src \
+    && cd /tmp/ttyd-src/html \
+    && corepack enable \
+    && corepack prepare yarn@3.6.3 --activate \
+    && yarn install \
+    && yarn build \
+    && npx gulp inline \
+    && cp dist/inline.html /usr/share/ttyd-index.html \
+    && cd / && rm -rf /tmp/ttyd-src
+
 # Docker Compose plugin (agent manages compose stacks via docker.sock)
 RUN mkdir -p /usr/local/lib/docker/cli-plugins && \
     curl -SL "https://github.com/docker/compose/releases/latest/download/docker-compose-linux-$(uname -m)" \
@@ -52,19 +73,32 @@ USER root
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 
-RUN cat > /etc/goose-init << 'EOF'
-[ -f ~/.bashrc ] && source ~/.bashrc
+COPY yank /usr/local/bin/yank
+RUN chmod +x /usr/local/bin/yank
 
+COPY tmux.conf /home/goose/.tmux.conf
+RUN chown goose:workspace_users /home/goose/.tmux.conf
+
+# Баннер печатается в каждой новой tmux-панели (подключён в .bashrc)
+RUN cat > /etc/goose-init << 'EOF'
 echo ""
 echo "  ══════════════════════════════════════"
-echo "  🪿  Goose AI Agent"
+echo "  🪿  Goose AI Agent (tmux)"
 echo "  ══════════════════════════════════════"
 echo "  goose session       — запустить сессию"
 echo "  goose configure     — настройка модели и MCP"
 echo "  goose --help        — все команды"
+echo "  ──────────────────────────────────────"
+echo "  Копировать: выделить мышью, отпустить"
+echo "  Вставить:   правый клик > Paste"
+echo "  tmux: Ctrl+B, C — окно, Ctrl+B, D — отсоединиться"
+echo "  Сессия переживает обрыв связи и релоад Caddy"
 echo "  ══════════════════════════════════════"
 echo ""
 EOF
+
+RUN echo 'cat /etc/goose-init 2>/dev/null' >> /home/goose/.bashrc \
+    && chown goose:workspace_users /home/goose/.bashrc
 
 USER goose
 WORKDIR /workspace

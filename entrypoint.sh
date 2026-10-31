@@ -12,4 +12,8 @@ fi
 sudo chown -R goose:workspace_users /home/goose/.local 2>/dev/null || true
 sudo chown -R goose:workspace_users /home/goose/.config 2>/dev/null || true
 
-exec ttyd -p 7681 -W bash --init-file /etc/goose-init
+# ttyd → tmux: каждое подключение аттачится к сессии "main".
+# tmux-сервер живёт независимо от соединений — сессия агента
+# переживает обрыв связи и релоад Caddy.
+exec ttyd -p 7681 -W -I /usr/share/ttyd-index.html \
+    bash -c 'tmux attach -d || tmux new -s main -c /workspace'
