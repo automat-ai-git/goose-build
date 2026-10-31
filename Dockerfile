@@ -28,13 +28,13 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/* \
     && pip3 install --break-system-packages requests pyyaml python-dotenv
 
-# tmux 3.5a из исходников (Ubuntu 24.04 даёт только 3.4; extended-keys требует 3.5+)
+# tmux из исходников (Ubuntu 24.04 даёт только 3.4; extended-keys требует 3.5+)
 RUN apt-get update && apt-get install -y \
     libevent-dev libncurses-dev bison pkg-config \
     && rm -rf /var/lib/apt/lists/* \
-    && curl -fsSL https://github.com/tmux/tmux/releases/download/3.5a/tmux-3.5a.tar.gz | tar xz \
-    && cd tmux-3.5a && ./configure && make -j$(nproc) && make install \
-    && cd .. && rm -rf tmux-3.5a
+    && curl -fsSL https://github.com/tmux/tmux/releases/download/3.8/tmux-3.8.tar.gz | tar xz \
+    && cd tmux-3.8 && ./configure && make -j$(nproc) && make install \
+    && cd .. && rm -rf tmux-3.8
 
 # ttyd frontend с поддержкой OSC52 (копирование в буфер браузера)
 # apt-версия ttyd (1.7.x) не имеет @xterm/addon-clipboard,
