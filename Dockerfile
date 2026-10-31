@@ -52,7 +52,7 @@ ENV LC_ALL=ru_RU.UTF-8
 RUN git clone --depth 1 https://github.com/tsl0922/ttyd.git /tmp/ttyd-src \
     && cd /tmp/ttyd-src \
     && curl -fsSL https://patch-diff.githubusercontent.com/raw/tsl0922/ttyd/pull/1565.diff | git apply \
-    && sed -i 's|const text = atob(args\[1\]);|const text = new TextDecoder().decode(Uint8Array.from(atob(args[1]), (c) => c.charCodeAt(0)));|' html/src/components/terminal/xterm/index.ts \
+    && sed -i 's|const text = atob(args\[1\]);|const text = new TextDecoder().decode(Uint8Array.from(atob(args[1]), c => c.charCodeAt(0)));|' html/src/components/terminal/xterm/index.ts \
     && cd html \
     && corepack enable \
     && corepack prepare yarn@3.6.3 --activate \
