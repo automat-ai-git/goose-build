@@ -28,26 +28,31 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/* \
     && pip3 install --break-system-packages requests pyyaml python-dotenv
 
-# tmux 3.5a из исходников (Ubuntu 24.04 даёт только 3.4; extended-keys требует 3.5+).
-# ПИН НА 3.5a: на 3.8 ломается доставка OSC52 в браузер (копирование мышью не
-# доходит до буфера) — pi-build работает именно на 3.5a с идентичным tmux.conf
+# tmux из исходников (Ubuntu 24.04 даёт только 3.4; extended-keys требует 3.5+).
+# Версия на копирование не влияет — 3.5a и 3.8 ведут себя одинаково
 RUN apt-get update && apt-get install -y \
     locales libevent-dev libncurses-dev bison pkg-config \
     && rm -rf /var/lib/apt/lists/* \
     && sed -i '/ru_RU.UTF-8/s/^# //g' /etc/locale.gen \
     && locale-gen \
-    && curl -fsSL https://github.com/tmux/tmux/releases/download/3.5a/tmux-3.5a.tar.gz | tar xz \
-    && cd tmux-3.5a && ./configure && make -j$(nproc) && make install \
-    && cd .. && rm -rf tmux-3.5a
+    && curl -fsSL https://github.com/tmux/tmux/releases/download/3.8/tmux-3.8.tar.gz | tar xz \
+    && cd tmux-3.8 && ./configure && make -j$(nproc) && make install \
+    && cd .. && rm -rf tmux-3.8
 
 ENV LANG=ru_RU.UTF-8
 ENV LC_ALL=ru_RU.UTF-8
 
 # ttyd frontend с поддержкой OSC52 (копирование в буфер браузера)
 # apt-версия ttyd (1.7.x) не имеет @xterm/addon-clipboard,
-# поэтому собираем фронтенд из main ветки и подаём через -I
+# поэтому собираем фронтенд из main ветки и подаём через -I.
+# + патч ttyd#1565: браузер молча отбрасывает navigator.clipboard.writeText()
+# без user activation, а OSC52 прилетает по WebSocket без клика. Патч
+# регистрирует обработчик OSC52 через document.execCommand('copy') —
+# работает без жеста и на обычном http (PR не влит в upstream)
 RUN git clone --depth 1 https://github.com/tsl0922/ttyd.git /tmp/ttyd-src \
-    && cd /tmp/ttyd-src/html \
+    && cd /tmp/ttyd-src \
+    && curl -fsSL https://patch-diff.githubusercontent.com/raw/tsl0922/ttyd/pull/1565.diff | git apply \
+    && cd html \
     && corepack enable \
     && corepack prepare yarn@3.6.3 --activate \
     && yarn install \
