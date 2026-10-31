@@ -1,0 +1,71 @@
+#!/usr/bin/env python3
+""" goose#13177: строгие Python MCP-серверы падают на запросе server/discover
+(новый метод goose 1.56+), а goose откатывается на legacy handshake только
+при ответе -32601. Шим отвечает -32601 от имени сервера и прозрачно
+проксирует всё остальное.
+
+Использование в config.yaml:
+  cmd: /usr/local/bin/mcp-legacy-shim
+  args: [<оригинальный cmd>, <оригинальные args...>]
+"""
+import json
+import subprocess
+import sys
+import threading
+
+
+def main() -> None:
+    if len(sys.argv) < 2:
+        print("usage: mcp-legacy-shim CMD [ARGS...]", file=sys.stderr)
+        sys.exit(2)
+
+    proc = subprocess.Popen(
+        sys.argv[1:], stdin=subprocess.PIPE, stdout=subprocess.PIPE
+    )
+
+    def pump() -> None:
+        for raw in proc.stdout:
+            sys.stdout.buffer.write(raw)
+            sys.stdout.buffer.flush()
+
+    threading.Thread(target=pump, daemon=True).start()
+
+    try:
+        for raw in sys.stdin.buffer:
+            line = raw.decode("utf-8", "replace").strip()
+            if not line:
+                continue
+            try:
+                obj = json.loads(line)
+            except ValueError:
+                proc.stdin.write(raw)
+                proc.stdin.flush()
+                continue
+            if (
+                isinstance(obj, dict)
+                and obj.get("method") == "server/discover"
+                and "id" in obj
+            ):
+                resp = {
+                    "jsonrpc": "2.0",
+                    "id": obj["id"],
+                    "error": {"code": -32601, "message": "Method not found"},
+                }
+                sys.stdout.write(json.dumps(resp) + "\n")
+                sys.stdout.flush()
+                continue
+            proc.stdin.write(raw)
+            proc.stdin.flush()
+    finally:
+        try:
+            proc.stdin.close()
+        except Exception:
+            pass
+        try:
+            proc.wait(timeout=10)
+        except Exception:
+            proc.kill()
+
+
+if __name__ == "__main__":
+    main()

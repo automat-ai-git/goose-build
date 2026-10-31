@@ -92,6 +92,12 @@ RUN chmod +x /entrypoint.sh
 COPY yank /usr/local/bin/yank
 RUN chmod +x /usr/local/bin/yank
 
+# Шим для строгих Python MCP-серверов (plane, youtubetranscript): отвечают
+# криво/падают на новый метод goose server/discover (goose#13177), а fallback
+# срабатывает только на -32601 — шим отвечает им от имени сервера
+COPY mcp-legacy-shim /usr/local/bin/mcp-legacy-shim
+RUN chmod +x /usr/local/bin/mcp-legacy-shim
+
 COPY tmux.conf /home/goose/.tmux.conf
 RUN chown goose:workspace_users /home/goose/.tmux.conf
 
