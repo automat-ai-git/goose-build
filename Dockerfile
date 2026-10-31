@@ -29,12 +29,18 @@ RUN apt-get update && apt-get install -y \
     && pip3 install --break-system-packages requests pyyaml python-dotenv
 
 # tmux из исходников (Ubuntu 24.04 даёт только 3.4; extended-keys требует 3.5+)
+# + locales: без UTF-8 локали tmux рисует кириллицу и эмодзи подчёркиваниями
 RUN apt-get update && apt-get install -y \
-    libevent-dev libncurses-dev bison pkg-config \
+    locales libevent-dev libncurses-dev bison pkg-config \
     && rm -rf /var/lib/apt/lists/* \
+    && sed -i '/ru_RU.UTF-8/s/^# //g' /etc/locale.gen \
+    && locale-gen \
     && curl -fsSL https://github.com/tmux/tmux/releases/download/3.8/tmux-3.8.tar.gz | tar xz \
     && cd tmux-3.8 && ./configure && make -j$(nproc) && make install \
     && cd .. && rm -rf tmux-3.8
+
+ENV LANG=ru_RU.UTF-8
+ENV LC_ALL=ru_RU.UTF-8
 
 # ttyd frontend с поддержкой OSC52 (копирование в буфер браузера)
 # apt-версия ttyd (1.7.x) не имеет @xterm/addon-clipboard,
